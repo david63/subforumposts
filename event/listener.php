@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package Credits Page Extension
+* @package Sub Forum Posts Extension
 * @copyright (c) 2019 david63
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
@@ -52,16 +52,23 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.display_forums_modify_template_vars'	=> 'sub_forum_posts',
+			'core.display_forums_modify_template_vars' => 'sub_forum_posts',
 		);
 	}
 
+	/**
+	* Add the sub forum post count
+	*
+	* @param object $event The event object
+	* @return null
+	* @access public
+	*/
 	public function sub_forum_posts($event)
 	{
 		$subforums_row	= $event['subforums_row'];
 		$forum_data 	= array();
 
-		// Get fora post counts
+		// Build an array of fora post counts
 		$sql = 'SELECT forum_id, forum_posts_approved
 			FROM ' . $this->tables['forums'];
 
@@ -74,12 +81,14 @@ class listener implements EventSubscriberInterface
 
 		$this->db->sql_freeresult($result);
 
+		// Add the post count to the subforum name
 		foreach ($subforums_row as $key => $subforum)
 		{
 			if (is_array($subforum))
 			{
 				if (array_key_exists('SUBFORUM_NAME', $subforum))
 				{
+					// Need to reduce this count by 1 as key starts at 0
 					$forum_id = ltrim(strstr($subforum['U_SUBFORUM'], '='), '=') -1;
 					$subforum['SUBFORUM_NAME'] = $subforum['SUBFORUM_NAME'] . ' [' . $forum_data[$forum_id] . ']';
 				}
@@ -87,7 +96,7 @@ class listener implements EventSubscriberInterface
 			$subforums_row[$key] = $subforum;
 		}
 
+		// Return the template variable
 		$event['subforums_row'] = $subforums_row;
 	}
-
 }
