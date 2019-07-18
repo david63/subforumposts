@@ -70,13 +70,14 @@ class listener implements EventSubscriberInterface
 
 		// Build an array of fora post counts
 		$sql = 'SELECT forum_id, forum_posts_approved
-			FROM ' . $this->tables['forums'];
+			FROM ' . $this->tables['forums'] . '
+			ORDER BY forum_id ASC';
 
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$forum_data[] = $row['forum_posts_approved'];
+			$forum_data[$row['forum_id']] = $row['forum_posts_approved'];
 		}
 
 		$this->db->sql_freeresult($result);
@@ -88,9 +89,10 @@ class listener implements EventSubscriberInterface
 			{
 				if (array_key_exists('SUBFORUM_NAME', $subforum))
 				{
-					// Need to reduce this count by 1 as key starts at 0
-					$forum_id = ltrim(strstr($subforum['U_SUBFORUM'], '='), '=') -1;
-					$subforum['SUBFORUM_NAME'] = $subforum['SUBFORUM_NAME'] . ' [' . $forum_data[$forum_id] . ']';
+					$forum_id	= ltrim(strstr($subforum['U_SUBFORUM'], '='), '=');
+					$posts		= $forum_data[$forum_id];
+
+					$subforum['SUBFORUM_NAME'] = $subforum['SUBFORUM_NAME'] . ' [' . $posts . ']';
 				}
 			}
 			$subforums_row[$key] = $subforum;
