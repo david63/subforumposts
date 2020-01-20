@@ -1,6 +1,3 @@
-imports:
-    - { resource: phpbb_tables.yml }
-
 services:
     david63.subforumposts.listener:
         class: david63\subforumposts\event\listener
