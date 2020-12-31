@@ -6,3 +6,6 @@ services:
             - '%tables%'
         tags:
             - { name: event.listener }
+
+    _defaults:
+        public: true

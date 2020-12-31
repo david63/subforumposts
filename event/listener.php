@@ -66,7 +66,7 @@ class listener implements EventSubscriberInterface
 	public function sub_forum_posts($event)
 	{
 		$subforums_row	= $event['subforums_row'];
-		$forum_data 	= array();
+		$forum_data 	= [];
 
 		// Build an array of fora post counts
 		$sql = 'SELECT forum_id, forum_posts_approved
